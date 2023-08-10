@@ -37,14 +37,9 @@ public class TranslateText
 
         var total = await TranslatingTextAsync(client, srcLang, destLang, srcText);
 
-        ShowText(total);
+        WriteResult(total);
 
         Console.WriteLine($"We have finished translating: {DateTime.Now}");
-    }
-
-    private static void WriteError(string text)
-    {
-        Console.Error.WriteLine(text);
     }
 
     private static string[] GetSourceTexts()
@@ -99,10 +94,21 @@ public class TranslateText
         return sw.ElapsedMilliseconds;
     }
 
-    public static void ShowText(long totalTime)
+    public static void WriteResult(long totalTime)
+    {
+        var current = Console.ForegroundColor;
+
+        Console.ForegroundColor = totalTime <= 500 ? ConsoleColor.Green : ConsoleColor.Yellow;
+
+        Console.WriteLine($"Total time {totalTime} ms");
+
+        Console.ForegroundColor = current;
+    }
+
+    private static void WriteError(string text)
     {
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"Total time {totalTime} ms");
+        Console.Error.WriteLine(text);
     }
 }
 

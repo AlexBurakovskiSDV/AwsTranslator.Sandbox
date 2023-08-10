@@ -15,6 +15,17 @@ public class TranslateText
         string accessKey = configuration["AppSettings:AccessKey"];
         string secretKey = configuration["AppSettings:SecretKey"];
 
+        if (string.IsNullOrWhiteSpace(accessKey))
+        {
+            WriteError("Please provide accessKey in appSettings.json");
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(secretKey))
+        {
+            WriteError("Please provide secretKey in appSettings.json");
+            return;
+        }
+
 
         var client = new AmazonTranslateClient(accessKey, secretKey, RegionEndpoint.EUCentral1);
 
@@ -29,6 +40,11 @@ public class TranslateText
         ShowText(total);
 
         Console.WriteLine($"We have finished translating: {DateTime.Now}");
+    }
+
+    private static void WriteError(string text)
+    {
+        Console.Error.WriteLine(text);
     }
 
     private static string[] GetSourceTexts()
@@ -71,19 +87,7 @@ public class TranslateText
                 Text = item,
             };
 
-            var translationTask = Task.Run(() =>
-            {
-                try
-                {
-                    client.TranslateTextAsync(request);
-
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-
-            });
+            var translationTask = client.TranslateTextAsync(request);
             translationTasks.Add(translationTask);
         }
 
@@ -97,6 +101,7 @@ public class TranslateText
 
     public static void ShowText(long totalTime)
     {
+        Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine($"Total time {totalTime} ms");
     }
 }
